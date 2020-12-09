@@ -6,20 +6,27 @@
 #include <windows.h>
 #include <unistd.h>
 #include <conio.h>
-#define MAX 50
+#include <cstdlib>
+#include <iomanip>
+
 
 using namespace std;
-#define delay Sleep
+#define delay Sleep // mendefinisikan nilai jeda (sleep) munculnya teks
+#define maxData 3 //mendefinisikan maksimak data yang dapat di input
 
-struct tipedata
+string data[10][3]; //array kosong
+int head = -1, tail = -1, a,x;
+
+struct tipedata // kumpulan deklarasi data
 {
-    string nama;
-    int jumlah, harga, total, notlp, zona;
+    string namdep, nambel, notlp;
+    int jumlah, total, num;
+    string email;
 } td;
 
-struct tiket
+struct tiket // mengelompkkan harga tiket
 {
-    string tipe[3][4]=
+    string tipe[3][4]= //array tiket
     {
         {"|            1","Green Zone","Standing","Rp 2.000.000"},
         {"|            2","Blue Zone","Free Seating","Rp 1.500.000"},
@@ -27,142 +34,7 @@ struct tiket
     };
 } tk;
 
-struct queue
-{
-    int data [MAX];
-    int head,tail;
-} antrian;
-
-void init ()
-{
-    antrian.head= -1;
-    antrian.tail= -1;
-}
-
-bool full ()
-{
-    if(antrian.tail == MAX-1)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-bool empty ()
-{
-    if(antrian.tail == -1)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-void tampilData ()
-{
-    int i;
-    if (!empty())
-    {
-        for(i=antrian.head; i<antrian.tail; i++)
-        {
-            cout<<endl;
-            cout<<"Pembelian Tiket atas nama "<<td.nama<<endl;
-            cout<<"Dengan Jumlah Tiket "<<td.jumlah<<endl;
-            cout<<"Total Pembelian Tiket Rp."<<td.total<<",-"<<endl;
-        }
-    }
-    cout<<"\n";
-}
-
-void inQueue ()
-{
-
-    if (!full())
-    {
-        cout<<"Nama : ";
-        cin>>td.nama;
-        cout<<"Nomor Telepon : ";
-        cin>>td.notlp;
-        cout <<"Jumlah Tiket yang ingin di beli : ";
-        cin >> td.jumlah;
-        cout<<"Zona tiket : ";
-        cin>>td.zona;
-            switch(td.zona)
-            {
-            case 1 :
-                td.harga = 2000000;
-                break;
-            case 2:
-                td.harga = 1500000;
-                break;
-            case 3 :
-                td.harga = 800000;
-                break;
-            default :
-                cout << "TIDAK ADA ZONA!";
-                break;
-
-            }
-            td.total = td.harga * td.jumlah;
-
-        antrian.data[antrian.tail] = td.jumlah, td.nama, td.notlp, td.total;
-        antrian.tail++;
-    }
-    else
-    {
-        cout<<"Queue penuh\n";
-    }
-    getchar();
-}
-
-void deQueue ()
-{
-    int i;
-    tampilData();
-
-    if (!empty())
-    {
-        cout<<"\nMembatalkan Pemesanan\" "<<antrian.data[antrian.head]<<" \"..."<<endl;
-        for(i=antrian.head; i<antrian.tail; i++)
-        {
-            antrian.data [i]= antrian.data[i+1];
-        }
-        antrian.tail--;
-    }
-    else
-    {
-        cout<<"Pesanan Kosong";
-    }
-    getchar();
-}
-
-void Search()
-{
-    int i,ketemu=0;
-    cout<<"Nama yang ingin di Cek : ";
-    cin>>td.nama;
-    for(i=-1; i<td.nama; i++)
-    {
-        if(antrian.data[i]==td.nama)
-        {
-            ketemu =1;
-            cout<<endl;
-            cout<<"Pembelian Tiket atas nama "<<td.nama<<" dengan jumlah "<<td.jumlah<<" tiket \ndan total pembelian Tiket yang harus dibayar adalah Rp."<<td.total<<"\ntelah berhasil dilakukan!"<<endl;
-            cout<<endl;
-        }
-    }
-    if(ketemu==0)
-    {
-        cout<<"Data tidak ketemu";
-    }
-}
-
-string t(int width, char* s)
+string t(int width, char* s) //fungsi untuk membuat tulisan ditengah
 {
     stringstream ss;
     int l = strlen(s);
@@ -174,16 +46,163 @@ string t(int width, char* s)
     ss << s;
     return ss.str();
 }
+struct queue //fungsi queue
+{
+    int data [maxData];//inputan data di batasi oleh jumlah yang sudah di tentukan di define maxData
+    int head,tail;
+} antrian;
+
+void init ()
+{
+    antrian.head= -1;
+    antrian.tail= -1;
+}
+
+bool isEmpty(){ // memastikan queue dalam keadaan kosong
+	if(head == -1){
+	    return true;
+	} else {
+		return false;
+	}
+}
+
+bool IsFull(){ // mrnyatakan queue telah penuh / mencapai batas maxData
+	if(head ==  maxData - 1)
+	    return true;
+	else
+	    return false;
+}
+
+void Enqueue(){ //memasukan data ke queue
+	string num,nama,nzone;
+	char zona;
+	int harga,juml, bayar;
+	int menu;
+
+	if (IsFull()){
+        int nomor = a + 1;
+	    cout <<t(80, " Mohon maaf tiket sudah habis ^_^")<<endl;
+	}
+	else{
+	    	head++;
+	        cout <<t(80, "Masukan data lengkap dibawah ini : ")<< endl; //input data (masuk dalam array)
+	        cout <<t(80, "Nama       : "); cin >> nama;
+	        cout <<t(80, "No.Telfon  : (+62) "); cin >>num;
+	        cout <<t(80, "Pilih Zona : ")<< endl;
+	        cout <<t(80, "-----------------------------------------------------------")<<endl;
+	        Sleep(500);
+	        cout <<t(80, "|                                                         |")<<endl;
+	        cout <<t(80, "|                   ZONA TERSEDIA                         |")<<endl;
+	    	cout <<t(80, "|                                                         |")<<endl;
+	        cout <<t(80, "|                  [1] Yellow Zone                        |")<<endl;
+	        cout <<t(80, "|                  [2] Blue Zone                          |")<<endl;
+	        cout <<t(80, "|                  [3] Green Zone                         |")<<endl;
+	        cout <<t(80, "|                                                         |")<<endl;
+	        cout <<t(80, "-----------------------------------------------------------")<<endl;
+
+	        cout <<t(80, "\n")<<endl;
+	        Sleep(500);
+	        cout <<t(80, "Memilih Zona : ");
+	        cin >> menu;
+	        cout << "\n";
+
+	        if(menu == 1) {
+	            harga=2000000;
+	            nzone="Yellow Zone";
+	        }
+	        else if (menu == 2){
+	            harga=1500000;
+	            nzone="Blue Zone";
+	        }
+	        else if (menu == 3){
+	            harga=800000;
+	            nzone="Green Zone";
+	        }
+
+	        cout <<t(80, "Zona yang telah dipilih adalah : ")<< nzone <<endl; //mencetak isi dari yang diinputkan(array)
+ 	        cout <<t(80, "Dengan harga RP: ")<< harga <<endl;
+	        cout <<t(80, "Beli berapa tiket : "); cin >> juml;
+
+			bayar=harga*juml;
+
+	        cout<<endl;
+	        cout<<"Nama                 : "<<nama<<endl;
+	        cout<<"Nomer Telfon         : (+62)"<<num<<endl;
+	        cout<<"Zona yang anda pilih : "<<nzone<<endl;
+	        cout<<"Jumlah pembelian     : "<<juml<<endl;
+	        cout<<"Total pemmbayaran    : RP."<<bayar<<endl;
+	        cout<<"TIKET YANG SUDAH DIPESAN TIDAK DAPAT DIBATALKAN!"<<endl;
+
+	        std::ostringstream ss;
+	        std::ostringstream totalBayarSTR;
+
+	        ss << num;
+	        totalBayarSTR << bayar;
+
+	        data[head][0] = nama;
+	        data[head][1] = ss.str();
+	        data[head][2] = totalBayarSTR.str();
+
+	        getch();
+
+	}
+}
+
+void view(){ // menampilkan data yang sudah dimasukkan ke queue
+	if (!isEmpty()){
+
+  		for(int a=head;a>=0;a--){
+  		    int nomor = a+1;
+  			cout<<" No. "<<std::setfill('0')<< std::setw(3) <<nomor<< endl;
+  			cout<<" Nama Pembeli    : " <<data[a][0]<< endl;
+  			cout<<" No.Telfon       : (+62)" << data[a][1] << endl;
+  			cout<<" Total Bayar     : " << data[a][2] << endl;
+  			cout<<endl;
+  		}
+ 	} else
+  		cout<<"- BELUM ADA PEMESANAN TIKET -";
+  		cout<<endl;
+
+}
+
+void cari(){
+    string bil_cari;
+    cout<< "Input Nama : "; cin >> bil_cari; //input data yang akan dicari (searching)
+    int ketemu = 0;
+    int i = 0;
+
+    while((i<10) && (ketemu==0))
+    {
+        if(data[i][0]==bil_cari || data[i][1]==bil_cari){
+            ketemu = 1;
+            cout<<" Nama                   : "<<data[i][0] << endl;
+            cout<<" No. Telfon             : (+62)"<<data[i][1] << endl;
+            cout<<" Total pembayaran       : "<<data[i][2] << endl;
+        }
+        else{
+            i=i+1;
+        }
+    }
+    if(ketemu == 1){
+        cout<< "\n Telah berhasil melakukan pemesanan!"<<endl;
+
+    }
+    else{
+        cout<<"\n Data tidak tersedia!"<<endl;
+    }
+}
 
 int main()
 {
+    //proses pemilihan (searching)
     int menu;
     do
     {
+awal:
         system ("cls");
         cout<<endl;
         cout <<t(80, "==========================================================")<<endl;
-        Sleep(500);
+        Sleep(500); //jeda 500sec
         cout <<t(80, "|                                                         |")<<endl;
         cout <<t(80, "|         HALO! INI APLIKASI PENJUALAN TIKET KONSER       |")<<endl;
         cout <<t(80, "|                                                         |")<<endl;
@@ -196,7 +215,6 @@ int main()
         cout <<t(80, "|                  [3] Pembelian Tiket                    |")<<endl;
         cout <<t(80, "|                  [4] Data Pembelian                     |")<<endl;
         cout <<t(80, "|                  [5] Cek Status Pemesanan               |")<<endl;
-        cout <<t(80, "|                  [6] Batalkan Pemesanan                 |")<<endl;
         cout <<t(80, "|                  [0] Keluar                             |")<<endl;
         cout <<t(80, "|                                                         |")<<endl;
         cout <<t(80, "===========================================================")<<endl;
@@ -258,7 +276,7 @@ int main()
             system ("cls");
             cout<<"|\t     no\t\t"<<"|\t   Zone\t\t|"<<"\t   Tipe\t\t"<<"|\t Harga\t\t|"<<endl;
             cout<<"-------------------------------------------------------------------------------------------------"<<endl;
-            for(int i=0; i<3; i++)
+            for(int i=0; i<3; i++) //proses pengambilan data tiket (searching)
             {
                 for(int j=0; j<4; j++)
                 {
@@ -267,26 +285,19 @@ int main()
                 cout<<endl;
             }
             break;
-        case 3 :
-            system ("cls");
-            cout << "Zona dan Harga Tiket\n";
-            cout << "[1] Green Zone | Standing | Rp 2.000.000\n";
-            cout << "[2] Blue Zone | Free Seating | Rp 1.500.000\n";
-            cout << "[3] Yellow Zone | Free Seating | Rp 800.000\n";
-            cout<<endl;
-            inQueue();
-            break;
+       	case 3 :
+       		system("cls");
+			Enqueue(); //memanggil fungsi input queue
+       		break;
         case 4 :
             system ("cls");
-            cout <<"Daftar Pembelian Tiket Konser Ex Melodiae"<<endl;
-            tampilData();
+            view(); // memanggil fungsi tampil queue
             break;
         case 5 :
             system ("cls");
-            cout <<"Cek Status Pemesanan";
-            Search();
+            cari(); //memanggil fungs cari queue
             break;
-        default :
+        default : //jika pilihan selain 1-5
             system ("cls");
             cout <<t(80, "TIDAK ADA MENU ")<<menu<<"!\n";
         }
@@ -295,6 +306,6 @@ int main()
         getch();
 
     }
-    while (menu!=6);
+    while (menu!=10);
     return 0;
 }
